@@ -6,74 +6,98 @@ import os
 root = Tk()
 root.title("Mp3")
 root.resizable(width=False, height=False)
-root.geometry("195x516")
+root.geometry("400x200")
 
-# Add Image
-#play_img = PhotoImage(file = "playerMusic\icons\play.png")
-  
-# Create button and image
-#play_button= Button(root, image =play_img, borderwidth = 0, width=5, height=3)
-#play_button.grid(row=3, column=5)
+menubar = Menu(root)
+root.config(menu=menubar)
 
-# grid 
+song = []
+current_song = ""
+paused= False
 
-racine_button=Button(root, text="1-0", bg='red' , width=5, height=3, border=2, font=10,command=lambda: button_squareroot())
-racine_button.grid(row=1, column=0)
+def load_music():
+    global current_song
+    root.directory = filedialog.askdirectory()
 
-modulo_button=Button(root, text="1-1", bg='red' , width=5, height=3, border=2, font=10,command=lambda:  button_click("//"))
-modulo_button.grid(row=1, column=1)
+    for song in os.listdir(root.directory):
+        name, ext = os.path.splitext(song)
+        if ext == '.mp3':
+            songs.append(song)
 
-carré_button=Button(root, text="1-2", bg='red' , width=5, height=3, border=2, font=10,command=lambda: button_square())
-carré_button.grid(row=1, column=2)
+    for song in songs:
+        songlist.insert("end", song)
 
-seven_button=Button(root, text="2-0", bg='red', width=5, height=3, border=2, font=10,command=lambda: button_click("7"))
-seven_button.grid(row=2, column=0)
+    songlist.selection_set(0)
+    current_song = songs[songlist.curselection()[0]]
 
-eight_button=Button(root, text="2-1", bg='red', width=5, height=3, border=2, font=10,command=lambda: button_click("8"))
-eight_button.grid(row=2, column=1)
+def play_music():
+    global current_song, paused
 
-nine_button=Button(root, text="2-2", bg='red', width=5, height=3, border=2, font=10,command=lambda: button_click("9"))
-nine_button.grid(row=2, column=2)
+    if not paused:
+        mixer.load(os.path.join(root.directory, current_song))
+    else:
+        mixer.music.unpause()
+        paused = False
 
-four_button=Button(root, text="3-0", bg='red', width=5, height=3, border=2, font=10,command=lambda: button_click("4"))
-four_button.grid(row=3, column=0)
+def pause_music():
+    global paused
+    mixer.music.pause()
+    paused = True
 
-five_button=Button(root, text="3-1", bg='red', width=5, height=3, border=2, font=10,command=lambda: button_click("5"))
-five_button.grid(row=3, column=1)
+def next_music():
+    global current_song, paused
 
-six_button=Button(root, text="3-2", bg='red', width=5, height=3, border=2, font=10,command=lambda: button_click("6"))
-six_button.grid(row=3, column=2)
+    try:
+        songlist.selection_clear(0,  END)
+        songlist.selection_set(songs.index(current_song) + 1)
+        current_song = songs[songlist.curselection()[0]]
+        play_music()
+    except:
+        pass
+
+def prev_music():
+    global current_song, paused
+        
+    try:
+        songlist.selection_clear(0,  END)
+        songlist.selection_set(songs.index(current_song) - 1)
+        current_song = songs[songlist.curselection()[0]]
+        play_music()
+    except: 
+        pass
+        
+
+organise_menu = Menu(menubar, tearoff=False)
+organise_menu.add_command(label='select folder', command=load_music)
+menubar.add_cascade(label='Organise', menu=organise_menu )
+
+songlist = Listbox(root, bg="black", fg="white", width=100, height=10)
+songlist.pack()
 
 
-sounddown_button=Button(root, text="4-0", bg='grey', width=5, height=3, border=2, font=10,command=lambda: button_click("1"))
-sounddown_button.grid(row=4, column=0)
+control_frame = Frame(root)
+control_frame.pack()
+# button creation 
 
-mute_button=Button(root, text="4-1", bg='grey', width=5, height=3, border=2, font=10,command=lambda: button_click("2"))
-mute_button.grid(row=4, column=1)
-
-soundup_button=Button(root, text="4-2", bg='grey', width=5, height=3, border=2, font=10,command=lambda: button_click("3"))
-soundup_button.grid(row=4, column=2)
-
-
-back_button=Button(root, text="5-0", bg='blue' , width=5, height=3, border=2, font=10,command=lambda: button_clear())
-back_button.grid(row=5, column=0)
-
-pause_button=Button(root, text="5-1", bg='cyan', width=5, height=3, border=2, font=10,command=lambda: button_click("0"))
-pause_button.grid(row=5, column=1)
-
-next_button=Button(root, text="5-2", bg='blue', width=5, height=3, border=2, font=10,command=lambda: button_click("."))
-next_button.grid(row=5, column=2)
+sounddown_button=Button(control_frame, text="🔉", bg='grey', borderwidth=0,)
+pause_button=Button(control_frame, text="⏸️", bg='grey', borderwidth=0 ,command=pause_music)
+soundup_button=Button(control_frame, text="🔊", bg='grey', borderwidth=0 ,)
+back_button=Button(control_frame, text="⏮️", bg='blue' , borderwidth=0 ,command=prev_music)
+play_button=Button(control_frame, text="▶️", bg='cyan', borderwidth=0 ,command=play_music)
+next_button=Button(control_frame, text="⏭️", bg='blue', borderwidth=0 ,command=next_music)
+loop_button=Button(control_frame, text="🔁", bg='grey' , borderwidth=0 ,)
+stop_button=Button(control_frame, text="⏹️", bg='grey', borderwidth=0 ,)
 
 
-loop_button=Button(root, text="6-0", bg='grey' , width=5, height=3, border=2, font=10,command=lambda: button_clear())
-loop_button.grid(row=6, column=0)
-
-stop_button=Button(root, text="6-1", bg='grey', width=5, height=3, border=2, font=10,command=lambda: button_click("0"))
-stop_button.grid(row=6, column=1)
-
-playlist_button=Button(root, text="6-2", bg='grey', width=5, height=3, border=2, font=10,command=lambda: button_click("."))
-playlist_button.grid(row=6, column=2)
-
+# grid the button
+sounddown_button.grid(row=0, column=1, padx=10, pady=10)
+soundup_button.grid(row=0, column=2, padx=10, pady=10)
+play_button.grid(row=0, column=3, padx=10, pady=10)
+stop_button.grid(row=0, column=6, padx=10, pady=10)
+back_button.grid(row=0, column=5, padx=10, pady=10)
+next_button.grid(row=0, column=7, padx=10, pady=10)
+loop_button.grid(row=0, column=0, padx=10, pady=10)
+pause_button.grid(row=0, column=4, padx=10, pady=10)
 
 root.mainloop()
 
