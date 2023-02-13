@@ -18,42 +18,35 @@ paused= False
 mixer.init()
 
 def load_music():
-    try:
-            ext_list = ['.mp3', '.flac', '.aac']  # List used to check file extension
-            root.root.directory = filedialog.askopenfilenames()
-            for song in root.root.directory:
-                name, ext = os.path.splitext(song)
-                if ext in ext_list:
-                    root.songs.append(song)
-            for song in root.songs:
-                song_name = os.path.basename(song)  # Get the filename
-                root.directory_name = song.replace(song_name, "")  # Get path of filename
-                root.songlist.insert(END, song_name)
-            root.songlist.selection_set(0)
-            root.currentsong = root.songs[root.songlist.curselection()[0]]
-    except:
-            pass
-    
+    global current_song
+    root.directory = filedialog.askdirectory()
+
+    for song in os.listdir(root.directory):
+        name, ext = os.path.splitext(song)
+        if ext == '.mp3':
+            song.append(song)
+
+    for song in song:
+        songlist.insert("end", song)
+
+    songlist.selection_set(0)
+    current_song = song[songlist.curselection()[0]]
+
 def play_music():
-    try:
-            if not root.paused:
-                #  Plays concatenated path of file
-                root.currentsong = root.directory_name + root.songlist.get(ACTIVE)
-                mixer.music.load(root.currentsong)
-                if root.ticked is True:  # Checked if loop button is on, then play the looped file
-                    mixer.music.play(-1)
-                else:
-                    mixer.music.play()
-            else:
-                mixer.music.unpause()
-                root.paused = False
-    except:
-            pass
+    global current_song, paused
+
+    if not paused:
+        mixer.music.load(os.path.join(root.directory, current_song))
+    else:
+        mixer.music.unpause()
+        paused = False
  
+
 def pause_music():
     global paused
     mixer.music.pause()
-    paused = True
+
+
 
 def next_music():
     global current_song, paused
@@ -76,13 +69,13 @@ def prev_music():
         play_music()
     except: 
         pass
-        
+
 def sound_down():
-     
-     pass
+    mixer.music.set_volume(volume=+10)
+    pass
 
 def sound_up():
-
+    mixer.music.set_volume(volume=+10)
     pass
 
 def stop_song():
@@ -92,9 +85,11 @@ def loop_song():
     mixer.music.play(loops=-1)
     pass
 
+def unpause():      
+    mixer.music.unpause()
 
 organise_menu = Menu(menubar, tearoff=False)
-organise_menu.add_command(label='select folder', command=load_music)
+organise_menu.add_command(label='select folder', command= load_music)
 menubar.add_cascade(label='Add music', menu=organise_menu )
 
 songlist = Listbox(root, bg="black", fg="white", width=100, height=15)
@@ -113,6 +108,7 @@ play_button=Button(control_frame, text="▶️", bg='green', borderwidth=0 ,comm
 next_button=Button(control_frame, text="⏭️", bg='grey', borderwidth=0 ,command=next_music, font=5)
 loop_button=Button(control_frame, text="🔁", bg='darkblue' , borderwidth=0 , command=loop_song, font=5)
 stop_button=Button(control_frame, text="⏹️", bg='red', borderwidth=0 , command=stop_song, font=5)
+unpause_button=Button(control_frame, text="⏯️", bg='green', borderwidth=0, command=unpause, font=5 )
 
 # grid the button
 sounddown_button.grid(row=0, column=1, padx=7, pady=10)
@@ -123,7 +119,7 @@ back_button.grid(row=0, column=5, padx=7, pady=10)
 next_button.grid(row=0, column=7, padx=7, pady=10)
 loop_button.grid(row=0, column=0, padx=7, pady=10)
 pause_button.grid(row=0, column=8, padx=7, pady=10)
-
+unpause_button.grid(row=0, column=9, padx=7, pady=10)
 
 root.mainloop()
 
