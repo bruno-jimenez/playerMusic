@@ -11,7 +11,7 @@ root.geometry("500x300")
 menubar = Menu(root)
 root.config(menu=menubar)
 
-song = []
+songs = []
 current_song = ""
 paused= False
 
@@ -24,15 +24,16 @@ def load_music():
     for song in os.listdir(root.directory):
         name, ext = os.path.splitext(song)
         if ext == '.mp3':
-            song.append(song)
+            songs.append(song)
 
-    for song in song:
+    for song in songs:
         songlist.insert("end", song)
 
     songlist.selection_set(0)
-    current_song = song[songlist.curselection()[0]]
+    current_song = songs[songlist.curselection()[0]]
 
 def play_music():
+    mixer.music.set_volume(50)
     global current_song, paused
 
     if not paused:
@@ -53,8 +54,8 @@ def next_music():
 
     try:
         songlist.selection_clear(0,  END)
-        songlist.selection_set(song.index(current_song) + 1)
-        current_song = song[songlist.curselection()[0]]
+        songlist.selection_set(songs.index(current_song) + 1)
+        current_song = songs[songlist.curselection()[0]]
         play_music()
     except:
         pass
@@ -64,18 +65,18 @@ def prev_music():
         
     try:
         songlist.selection_clear(0,  END)
-        songlist.selection_set(song.index(current_song) - 1)
-        current_song = song[songlist.curselection()[0]]
+        songlist.selection_set(songs.index(current_song) - 1)
+        current_song = songs[songlist.curselection()[0]]
         play_music()
     except: 
         pass
 
 def sound_down():
-    mixer.music.set_volume(volume=+10)
+    mixer.music.get_volume(+10)
     pass
 
 def sound_up():
-    mixer.music.set_volume(volume=+10)
+    mixer.music.get_volume(-10)
     pass
 
 def stop_song():
