@@ -18,33 +18,43 @@ paused= False
 mixer.init()
 
 def load_music():
-    global current_song
-    root.directory = filedialog.askdirectory()
-
-    for song in os.listdir(root.directory):
-        name, ext = os.path.splitext(song)
-        if ext == '.mp3':
-            songs.append(song)
-
-    for song in songs:
-        songlist.insert("end", song)
-
-    songlist.selection_set(0)
-    current_song = songs[songlist.curselection()[0]]
+        global current_song, paused
+        try:
+            ext_list = ['.mp3', '.flac', '.aac']  # List used to check file extension
+            root.root.directory = filedialog.askopenfilenames(initialdir='./')
+            for song in root.root.directory:
+                name, ext = os.path.splitext(song)
+                if ext in ext_list:
+                    root.songs.append(song)
+            for song in root.songs:
+                song_name = os.path.basename(song)  # Get the filename
+                root.directory_name = song.replace(song_name, "")  # Get path of filename
+                root.songlist.insert(END, song_name)
+            root.songlist.selection_set(0)
+            root.currentsong = root.songs[root.songlist.curselection()[0]]
+        except:
+            pass
 
 def play_music():
-    mixer.music.set_volume(50)
-    global current_song, paused
-
-    if not paused:
-        mixer.music.load(os.path.join(root.directory, current_song))
-    else:
-        mixer.music.unpause()
-        paused = False
- 
+        global current_song, paused
+        try:
+            if not paused:
+                #  Plays concatenated path of file
+                root.currentsong = root.directory_name + root.songlist.get(ACTIVE)
+                mixer.music.load(root.currentsong)
+                if root.ticked is True:  # Checked if loop button is on, then play the looped file
+                    mixer.music.play(-1)
+                else:
+                    mixer.music.play()
+            else:
+                mixer.music.unpause()
+                paused = False
+        except:
+            pass
 
 def pause_music():
     global paused
+    paused = True
     mixer.music.pause()
 
 
