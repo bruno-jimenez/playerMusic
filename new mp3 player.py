@@ -5,53 +5,90 @@ import tkinter.font as font
 from tkinter import filedialog
 import os
 
-#creating the root window 
-root=Tk()
+# importing libraries
+from pygame import mixer
+from tkinter import *
+import tkinter.font as font
+from tkinter import filedialog
+import os
+
+# creating the root window
+root = Tk()
 root.title('Mp3 player')
 root.resizable(width=False, height=False)
 root.geometry("500x300")
-#initialize mixer 
+# initialize mixer
 mixer.init()
 
-#create the listbox to contain songs
-songs_list=Listbox(root,selectmode=SINGLE,bg="black",fg="white",font=('arial',15), width=50, height=10,selectbackground="gray",selectforeground="black")
-songs_list.grid(columnspan=7)
+songs = []
+current_song = ""
+paused= False
 
-#add many songs to the playlist of python mp3 player
+# create the listbox to contain songs
+songs_list = Listbox(root, selectmode=SINGLE, bg="black", fg="white", font=('arial', 9), width=80, height=15,selectbackground="gray", selectforeground="black")
+songs_list.grid(columnspan=9)
+
 def addsongs():
-    #to open a file  
-    temp_song=filedialog.askopenfilenames(initialdir="Music/",title="Choose a song", filetypes=(("mp3 Files","*.mp3"),))
-    ##loop through every item in the list to insert in the listbox
-    for s in temp_song:
-        s=s.replace("./","")
-        songs_list.insert(END,s)
+    path = filedialog.askdirectory()
+    if path:
+        os.chdir(path)
+        songs = os.listdir(path)
+
+        for song in songs:
+            if song.endswith(".mp3"):
+                songs_list.delete(1, END)
+                songs_list.insert(END,song)
      
 def deletesong():
     curr_song=songs_list.curselection()
     songs_list.delete(curr_song[0])
 
-def play_music():
-    song=songs_list.get(ACTIVE)
-    song=f'./{song}'
-    mixer.music.load(song)
+def play_music():  
+    music_name = songs_list.get(ACTIVE)
+    mixer.music.load(songs_list.get())
+    mixer.music.set_volume(0.9)
     mixer.music.play()
-    
-#to pause the song 
+
+
+
+def next_music():
+
+        pass
+
+def prev_music():
+
+        pass
+
+
+# to pause the song
 def pause_music():
     mixer.music.pause()
 
-#to stop the  song 
+
+# to stop the  song
 def stop_song():
     mixer.music.stop()
     songs_list.selection_clear(ACTIVE)
 
-#to resume the song
+
+# to resume the song
 
 def unpause():
     mixer.music.unpause()
 
+
 def loop_song():
     mixer.music.play(loops=-1)
+
+def sound_down():
+    #mixer.music.get_volume(+15)
+    pass
+
+def sound_up():
+    #mixer.music.get_volume(-15)
+    pass
+
+
 #menu 
 my_menu=Menu(root)
 root.config(menu=my_menu)
@@ -62,25 +99,26 @@ add_song_menu.add_command(label="Delete song",command=deletesong)
 
 
 # creating the button
-#sounddown_button=Button(text="🕩", bg='grey', borderwidth=0, command=sound_down, font=5)
-pause_button=Button(text="⏸️", bg='green', borderwidth=0 ,command=pause_music, font=5)
-#soundup_button=Button(text="🕪", bg='grey', borderwidth=0 , command=sound_up, font=5)
-#back_button=Button(text="⏮️", bg='grey' , borderwidth=0 ,command=prev_music, font=5)
-play_button=Button(text="▶️", bg='green', borderwidth=0 ,command=play_music, font=5)
-#next_button=Button(text="⏭️", bg='grey', borderwidth=0 ,command=next_music, font=5)
-loop_button=Button(text="🔁", bg='darkblue' , borderwidth=0 ,command=loop_song, font=5)
-stop_button=Button(text="⏹️", bg='red', borderwidth=0 , command=stop_song, font=5)
-unpause_button=Button(text="⏯️", bg='green', borderwidth=0, command=unpause, font=5 )
+sounddown_button=Button(text="🕩", bg='grey', borderwidth=0, command=sound_down, font=5)
+pause_button = Button(text="⏸️", bg='green', borderwidth=0, command=pause_music, font=5)
+soundup_button=Button(text="🕪", bg='grey', borderwidth=0 , command=sound_up, font=5)
+back_button=Button(text="⏮️", bg='grey' , borderwidth=0 ,command=prev_music, font=5)
+play_button = Button(text="▶️", bg='green', borderwidth=0, command=play_music, font=5)
+next_button=Button(text="⏭️", bg='grey', borderwidth=0 ,command=next_music, font=5)
+loop_button = Button(text="🔁", bg='darkblue', borderwidth=0, command=loop_song, font=5)
+stop_button = Button(text="⏹️", bg='red', borderwidth=0, command=stop_song, font=5)
+unpause_button = Button(text="⏯️", bg='green', borderwidth=0, command=unpause, font=5)
 
 # grid the button
-#sounddown_button.grid(row=0, column=1,)
-#soundup_button.grid(row=0, column=2,)
-play_button.grid(row=5, column=1,)
-stop_button.grid(row=5, column=2,)
-#back_button.grid(row=0, column=5,)
-#next_button.grid(row=0, column=7,)
-loop_button.grid(row=5, column=0,)
-pause_button.grid(row=5, column=3,)
-unpause_button.grid(row=5, column=4,)
+loop_button.grid(row=5, column=0, padx=9, pady=15)
+sounddown_button.grid(row=5, column=1, padx=9, pady=15)
+soundup_button.grid(row=5, column=2, padx=9, pady=15)
+play_button.grid(row=5, column=3, padx=9, pady=15)
+stop_button.grid(row=5, column=4, padx=9, pady=15)
+back_button.grid(row=5, column=5, padx=9, pady=15)
+next_button.grid(row=5, column=6, padx=9, pady=15)
+pause_button.grid(row=5, column=7, padx=9, pady=15)
+unpause_button.grid(row=5, column=8, padx=9, pady=15)
 
 mainloop()
+
