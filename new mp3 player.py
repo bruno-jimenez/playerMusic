@@ -44,19 +44,30 @@ def deletesong():
     songs_list.delete(curr_song[0])
 
 def play_music():  
-    music_name = songs_list.get(ACTIVE)
-    mixer.music.load(songs_list.get())
+    mixer.music.load(songs_list.get(ACTIVE))
     mixer.music.set_volume(0.9)
     mixer.music.play()
 
-
-
 def next_music():
+    global current_song, paused
 
+    try:
+        songs_list.selection_clear(0,  END)
+        songs_list.selection_set(songs.index(current_song) + 1)
+        current_song = songs[songs_list.curselection()[0]]
+        play_music()
+    except:
         pass
 
 def prev_music():
-
+    global current_song, paused
+        
+    try:
+        songs_list.selection_clear(0,  END)
+        songs_list.selection_set(songs.index(current_song) - 1)
+        current_song = songs[songs_list.curselection()[0]]
+        play_music()
+    except: 
         pass
 
 
