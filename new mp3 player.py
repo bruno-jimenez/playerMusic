@@ -41,6 +41,7 @@ def play_music():
     mixer.music.set_volume(0.9)
     mixer.music.play()
 
+    # next and prev music don't working
 def next_music():
     global current_song, paused
 
