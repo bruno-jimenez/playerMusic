@@ -1,10 +1,3 @@
-#importing libraries 
-from pygame import mixer
-from tkinter import *
-import tkinter.font as font
-from tkinter import filedialog
-import os
-
 # importing libraries
 from pygame import mixer
 from tkinter import *
@@ -52,7 +45,6 @@ def next_music():
     global current_song, paused
 
     try:
-        songs_list.selection_clear(0,  END)
         songs_list.selection_set(songs.index(current_song) + 1)
         current_song = songs[songs_list.curselection()[0]]
         play_music()
@@ -63,7 +55,6 @@ def prev_music():
     global current_song, paused
         
     try:
-        songs_list.selection_clear(0,  END)
         songs_list.selection_set(songs.index(current_song) - 1)
         current_song = songs[songs_list.curselection()[0]]
         play_music()
